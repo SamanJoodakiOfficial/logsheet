@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include('../../partials/head') %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header
+					class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">
+						لیست لاگ شیت‌ها
+					</h2>
+					<div class="flex gap-4 items-center">
+						<a
+							href="/audit-courses/new"
+							class="h-10 px-4 lg:h-12 lg:px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							<i class="ri-add-line"></i>
+							<span class="hidden sm:inline">ایجاد لاگ شیت‌ جدید</span>
+						</a>
+					</div>
+				</header>
+
+				<%- include('../../partials/toast') %>
+
+				<div class="overflow-x-auto mt-8">
+					<table
+						class="w-full border-collapse border border-CBCBCB text-sm lg:text-base">
+						<thead class="bg-gray-200">
+							<tr>
+								<th class="border border-CBCBCB p-2">نام</th>
+								<th class="border border-CBCBCB p-2">توضیحات</th>
+								<th class="border border-CBCBCB p-2">تاریخ شروع</th>
+								<th class="border border-CBCBCB p-2">تاریخ پایان</th>
+								<th class="border border-CBCBCB p-2">چک لیست</th>
+								<th class="border border-CBCBCB p-2">ویرایش</th>
+								<th class="border border-CBCBCB p-2">حذف</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if (auditCourses && auditCourses.length > 0) { %> <%
+							auditCourses.forEach((course, index) => { %>
+							<tr
+								class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-100' %> text-center">
+								<td class="border border-CBCBCB p-2"><%= course.name %></td>
+								<td class="border border-CBCBCB p-2">
+									<%= course.description %>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<%= course.startDate.toDateString() %>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<%= course.endDate.toDateString() %>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<a
+										href="/audit-courses/<%= course._id %>/checklists"
+										class="cursor-pointer text-blue-600 hover:underline"
+										>مشاهده چک‌لیست‌ها</a
+									>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<a
+										href="/audit-courses/<%= course._id %>/edit"
+										class="cursor-pointer text-blue-600 hover:underline">
+										<i class="ri-edit-line"></i>
+									</a>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<form
+										action="/audit-courses/<%= course._id %>/delete"
+										method="get"
+										style="display: inline">
+										<button
+											type="submit"
+											class="cursor-pointer text-lg text-red-600 hover:underline">
+											<i class="ri-delete-bin-7-line"></i>
+										</button>
+									</form>
+								</td>
+							</tr>
+							<% }) %> <% } else { %>
+							<tr>
+								<td colspan="5" class="border border-CBCBCB p-2 text-center">
+									هیچ دوره‌ای پیدا نشد
+								</td>
+							</tr>
+							<% } %>
+						</tbody>
+					</table>
+				</div>
+			</main>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const deleteForms = document.querySelectorAll('form');
+				deleteForms.forEach((form) => {
+					const deleteButton = form.querySelector('button');
+					deleteButton.addEventListener('click', (e) => {
+						e.preventDefault();
+						const confirmation = confirm(
+							'آیا مطمئن هستید که می‌خواهید این سوال را حذف کنید؟'
+						);
+						if (confirmation) {
+							form.submit();
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+</html>

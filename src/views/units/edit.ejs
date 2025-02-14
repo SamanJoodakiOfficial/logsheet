@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <%- include("../partials/head") %>
+
+  <body class="bg-primaryBackground">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+      <!-- Sidebar -->
+      <%- include('../partials/sidebar') %>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-4 lg:p-6">
+        <header class="w-full flex items-center justify-between flex-wrap gap-2">
+          <h2 class="font-bold text-202020 text-lg lg:text-xl">
+            ویرایش واحد
+          </h2>
+        </header>
+
+        <form
+          action="/orgs/<%= orgId %>/units/<%= unit._id %>/edit"
+          method="POST"
+          class="w-full min-h-[400px] bg-white rounded-lg p-4 mt-8 shadow-lg flex flex-col gap-3"
+        >
+          <h2 class="font-bold text-lg text-202020">اطلاعات واحد</h2>
+
+          <%- include('../partials/toast') %>
+
+          <!-- نام واحد -->
+          <div class="w-full flex flex-col gap-1 mt-3">
+            <label for="name" class="text-404040 text-xs">نام واحد</label>
+            <input
+              class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+              type="text"
+              name="name"
+              id="name"
+              required
+              value="<%= unit.name %>"
+              placeholder="نام واحد" />
+          </div>
+
+          <!-- توضیحات -->
+          <div class="w-full flex flex-col gap-1">
+            <label for="description" class="text-404040 text-xs">توضیحات</label>
+            <textarea
+              class="w-full min-h-24 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+              name="description"
+              id="description"
+              placeholder="توضیحات"><%= unit.description %></textarea>
+          </div>
+
+          <!-- واحد بالادستی -->
+          <div class="w-full flex flex-col gap-1">
+            <label for="parentUnit" class="text-404040 text-xs">واحد بالادستی</label>
+            <select
+              id="parentUnit"
+              name="parentUnit"
+              class="choices-multiple w-full border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none">
+              <option value="">بدون واحد بالادستی</option>
+              <% units.filter(parent => parent._id.toString() !== unit._id.toString()).forEach(parent => { %>
+                <option value="<%= parent._id %>" <%= parent._id.toString() === unit.parentUnit?.toString() ? 'selected' : '' %>><%= parent.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- نقش‌ها -->
+          <div class="w-full flex flex-col gap-1">
+            <label for="roles" class="text-404040 text-xs">نقش‌ها</label>
+            <select
+              id="roles"
+              name="roles"
+              class="choices-multiple w-full border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none"
+              multiple>
+              <% roles.forEach(role => { %>
+                <option value="<%= role._id %>" 
+                    <%= unit.roles?.some(r => r.role?._id.toString() === role._id.toString()) ? 'selected' : '' %>>
+                    <%= role.name %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- دکمه‌های ارسال -->
+          <div class="w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-2 mt-6">
+            <button
+              type="submit"
+              class="w-full sm:w-1/2 h-12 px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+              ذخیره
+            </button>
+            <a
+              href="/orgs/<%= orgId %>/units"
+              type="button"
+              class="w-full sm:w-1/2 h-12 px-6 bg-disabledButton text-606060 flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+              لغو
+            </a>
+          </div>
+        </form>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const parentUnitSelect = document.getElementById('parentUnit');
+        const rolesSelect = document.getElementById('roles');
+
+        // Initialize Choices for parentUnitSelect
+        new Choices(parentUnitSelect, {
+          removeItemButton: true,
+          searchPlaceholderValue: 'جستجو...',
+        });
+
+        // Initialize Choices for rolesSelect
+        new Choices(rolesSelect, {
+          removeItemButton: true,
+          searchPlaceholderValue: 'جستجو...',
+        });
+      });
+    </script>
+  </body>
+</html>

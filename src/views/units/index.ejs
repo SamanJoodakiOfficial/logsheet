@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include("../partials/head") %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">واحدهای سازمانی</h2>
+					<div class="flex gap-4 items-center">
+						<a href="/orgs/<%= orgId %>/units/new" class="h-10 px-4 lg:h-12 lg:px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							<i class="ri-add-line"></i>
+							<span class="hidden sm:inline">افزودن واحد جدید</span>
+						</a>
+					</div>
+				</header>
+
+				<%- include('../partials/toast') %>
+
+				<div class="overflow-x-auto mt-8">
+					<table class="w-full border-collapse border border-CBCBCB text-sm lg:text-base">
+						<thead class="bg-gray-200">
+							<tr>
+								<th class="border border-CBCBCB p-2">نام واحد</th>
+								<th class="border border-CBCBCB p-2">توضیحات</th>
+								<th class="border border-CBCBCB p-2">نقش‌ها</th>
+								<th class="border border-CBCBCB p-2">ویرایش</th>
+								<th class="border border-CBCBCB p-2">حذف</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if (units && units.length > 0) { %>
+								<% units.forEach((unit, index) => { %>
+									<tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-100' %> text-center">
+										<td class="border border-CBCBCB p-2">
+											<strong class="text-lg"><%= unit.name %></strong>
+										</td>
+										<td class="border border-CBCBCB p-2">
+											<p class="text-gray-600"><%= unit.description %></p>
+										</td>
+										<td class="border border-CBCBCB p-2">
+											<% if (unit.roles && unit.roles.length > 0) { %>
+												<ul class="list-disc list-inside">
+													<% unit.roles.forEach(role => { %>
+														<% if (role.role && role.role.name) { %>
+															<li>
+																<span><strong><%= role.role.name %></strong></span>
+																<a href="/orgs/<%= orgId %>/units/<%= unit._id %>/roles/<%= role.role._id %>/add-users" class="text-primary hover:underline">
+																	اضافه کردن کاربران
+																</a>
+															</li>
+														<% } %>
+													<% }) %>
+												</ul>
+											<% } else { %>
+												<span>هیچ نقشی برای این واحد وجود ندارد</span>
+											<% } %>
+										</td>
+										<td class="border border-CBCBCB p-2">
+											<a href="/orgs/<%= orgId %>/units/<%= unit._id %>/edit" class="cursor-pointer text-lg text-blue-600 hover:underline">
+												<i class="ri-edit-line"></i>
+											</a>
+										</td>
+										<td class="border border-CBCBCB p-2">
+											<form action="/orgs/<%= orgId %>/units/<%= unit._id %>/delete" method="get" style="display: inline">
+												<button type="submit" class="cursor-pointer text-lg text-red-600 hover:underline delete-btn">
+													<i class="ri-delete-bin-7-line"></i>
+												</button>
+											</form>
+										</td>
+									</tr>
+								<% }) %>
+							<% } else { %>
+								<tr>
+									<td colspan="5" class="border border-CBCBCB p-2 text-center">
+										هیچ واحدی یافت نشد.
+									</td>
+								</tr>
+							<% } %>
+						</tbody>
+					</table>
+				</div>
+			</main>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const deleteButtons = document.querySelectorAll('.delete-btn');
+				deleteButtons.forEach((button) => {
+					button.addEventListener('click', (e) => {
+						e.preventDefault();
+						const confirmation = confirm('آیا مطمئن هستید که می‌خواهید این واحد را حذف کنید؟');
+						if (confirmation) {
+							const form = button.closest('form');
+							form.submit();
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+</html>

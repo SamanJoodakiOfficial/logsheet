@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include("../partials/head") %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header
+					class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">
+						لیست سازمان‌ها
+					</h2>
+					<a
+						href="/orgs/new"
+						class="h-10 px-4 lg:h-12 lg:px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+						<i class="ri-add-line"></i>
+						<span class="hidden sm:inline">ساخت سازمان جدید</span>
+					</a>
+				</header>
+
+				<%- include('../partials/toast') %>
+
+				<div class="overflow-x-auto mt-8">
+					<% if (orgs && orgs.length > 0) { %>
+					<table
+						class="w-full border-collapse border border-CBCBCB text-sm lg:text-base">
+						<thead class="bg-gray-200">
+							<tr>
+								<th class="border border-CBCBCB p-2">نام</th>
+								<th class="border border-CBCBCB p-2 hidden sm:table-cell">
+									توضیحات
+								</th>
+								<th class="border border-CBCBCB p-2 hidden md:table-cell">
+									کد اقتصادی
+								</th>
+								<th class="border border-CBCBCB p-2 hidden md:table-cell">
+									آدرس
+								</th>
+								<th class="border border-CBCBCB p-2 hidden lg:table-cell">
+									تلفن
+								</th>
+								<th class="border border-CBCBCB p-2 hidden lg:table-cell">
+									نوع
+								</th>
+								<th class="border border-CBCBCB p-2">چارت</th>
+								<th class="border border-CBCBCB p-2">گروه‌ها</th>
+								<th class="border border-CBCBCB p-2">ویرایش</th>
+								<th class="border border-CBCBCB p-2">حذف</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% orgs.forEach((org, index) => { %>
+							<tr
+								class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-100' %> text-center">
+								<td class="border border-CBCBCB p-2"><%= org.name %></td>
+								<td class="border border-CBCBCB p-2 hidden sm:table-cell">
+									<%= org.description || '-' %>
+								</td>
+								<td class="border border-CBCBCB p-2 hidden md:table-cell">
+									<%= org.economicCode || '-' %>
+								</td>
+								<td class="border border-CBCBCB p-2 hidden md:table-cell">
+									<%= org.address || '-' %>
+								</td>
+								<td class="border border-CBCBCB p-2 hidden lg:table-cell">
+									<%= org.telephone || '-' %>
+								</td>
+								<td class="border border-CBCBCB p-2 hidden lg:table-cell">
+									<%= org.type || '-' %>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<a
+										href="/orgs/<%= org._id %>/units"
+										class="text-primary hover:underline">
+										چارت سازمانی
+									</a>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<a
+										href="/orgs/<%= org._id %>/groups"
+										class="text-primary hover:underline">
+										گروه‌ها
+									</a>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<a
+										href="/orgs/<%= org._id %>/edit"
+										class="text-blue-600 hover:underline">
+										<i class="ri-edit-line"></i>
+									</a>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<a
+										href="/orgs/<%= org._id %>/delete"
+										class="text-red-600 hover:underline delete-btn"
+										data-id="<%= org._id %>">
+										<i class="ri-delete-bin-6-line"></i>
+									</a>
+								</td>
+							</tr>
+							<% }) %>
+						</tbody>
+					</table>
+					<% } else { %>
+					<div
+						class="w-full mt-6 bg-white rounded-lg shadow-lg p-4 text-center text-gray-500">
+						هیچ سازمانی یافت نشد.
+					</div>
+					<% } %>
+				</div>
+			</main>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const deleteButtons = document.querySelectorAll('.delete-btn');
+				deleteButtons.forEach((button) => {
+					button.addEventListener('click', (e) => {
+						e.preventDefault();
+						const confirmation = confirm(
+							'آیا مطمئن هستید که می‌خواهید این سازمان را حذف کنید؟'
+						);
+						if (confirmation) {
+							window.location.href = button.getAttribute('href');
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+</html>

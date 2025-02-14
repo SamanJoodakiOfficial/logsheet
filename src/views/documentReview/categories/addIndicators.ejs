@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include("../../partials/head") %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">
+						افزودن شاخص‌ها به دسته‌بندی <%= selectedCategory.name %>
+					</h2>
+				</header>
+
+				<form
+					action="/document-reviews/categories/<%= selectedCategory._id %>/indicators"
+					method="POST"
+					class="w-full min-h-[400px] bg-white rounded-lg p-6 mt-8 shadow-lg flex flex-col gap-4">
+					<h2 class="font-bold text-lg text-202020">لیست شاخص‌ها</h2>
+
+					<%- include('../../partials/toast') %>
+
+					<h3 class="text-sm font-semibold text-404040 mt-4">
+						شاخص‌های موجود:
+					</h3>
+					<table class="min-w-full table-auto border-collapse">
+						<thead>
+							<tr>
+								<th class="py-2 px-4 border-b">نام شاخص</th>
+								<th class="py-2 px-4 border-b">توضیحات</th>
+								<th class="py-2 px-4 border-b">مقدار</th>
+								<th class="py-2 px-4 border-b">نوع</th> <!-- Add type column -->
+								<th class="py-2 px-4 border-b">عملیات</th>
+							</tr>
+						</thead>
+						<tbody class="text-center">
+							<% if (selectedIndicators.length > 0) { %> <%
+							selectedIndicators.forEach(indicator => { %>
+							<tr>
+								<td class="py-2 px-4 border-b"><%= indicator.name %></td>
+								<td class="py-2 px-4 border-b">
+									<%= indicator.description || "بدون توضیح" %>
+								</td>
+								<td class="py-2 px-4 border-b"><%= indicator.value %></td>
+								<td class="py-2 px-4 border-b"><%= indicator.type %></td> <!-- Display type -->
+								<td class="py-2 px-4 border-b">
+									<!-- دکمه حذف -->
+									<a
+										href="/document-reviews/categories/<%= selectedCategory._id %>/indicators/<%= indicator._id %>/delete"
+										class="text-red-600 hover:text-red-800 ml-4">
+										حذف
+									</a>
+								</td>
+							</tr>
+							<% }) %> <% } else { %>
+							<tr>
+								<td colspan="5" class="py-2 px-4 border-b text-center"> <!-- Updated colspan -->
+									هنوز شاخصی اضافه نشده است.
+								</td>
+							</tr>
+							<% } %>
+						</tbody>
+					</table>
+
+					<h3 class="text-sm font-semibold text-404040 mt-4">
+						افزودن شاخص جدید:
+					</h3>
+					<div id="indicators-container" class="flex flex-col gap-3"></div>
+
+					<button
+						type="button"
+						onclick="addIndicator()"
+						class="bg-slate-500 w-full text-white px-4 py-2 rounded-lg hover:bg-primaryDark">
+						افزودن شاخص جدید
+					</button>
+					<div
+						class="w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-2 mt-6">
+						<button
+							type="submit"
+							class="w-full sm:w-1/2 h-12 px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							ثبت شاخص
+						</button>
+						<a
+							href="/document-reviews/categories"
+							type="button"
+							class="w-full sm:w-1/2 h-12 px-6 bg-disabledButton text-606060 flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							لغو فرایند
+						</a>
+					</div>
+				</form>
+			</main>
+		</div>
+
+		<script>
+			function addIndicator() {
+				const container = document.getElementById('indicators-container');
+				const index = container.children.length;
+
+				const div = document.createElement('div');
+				div.classList.add(
+					'flex',
+					'items-center',
+					'gap-3',
+					'border',
+					'p-3',
+					'rounded-lg',
+					'bg-gray-100'
+				);
+				div.innerHTML = `
+                    <input type="text" name="indicators[${index}][name]" placeholder="نام شاخص" required 
+                        class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground p-4 focus:ring-2 focus:ring-primary">
+                    <input type="text" name="indicators[${index}][description]" placeholder="توضیحات"
+                        class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground p-4">
+                    <input type="number" name="indicators[${index}][value]" placeholder="مقدار"
+                        class="w-24 h-12 border rounded-lg text-606060 bg-primaryBackground p-4">
+                    <select name="indicators[${index}][type]" required 
+                        class="w-24 h-12 border rounded-lg text-606060 bg-primaryBackground p-4">
+                        <option value="structural">ساختاری</option>
+                        <option value="content">محتوایی</option>
+                    </select>
+                    <button type="button" onclick="removeIndicator(this)"
+                        class="text-white bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700">
+                        حذف
+                    </button>
+                `;
+				container.appendChild(div);
+			}
+
+			function removeIndicator(button) {
+				button.parentElement.remove();
+			}
+		</script>
+	</body>
+</html>

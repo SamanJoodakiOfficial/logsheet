@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include("../../partials/head") %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header
+					class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">
+						ایجاد سوال جدید
+					</h2>
+				</header>
+
+				<form
+					action="/questions/new"
+					method="POST"
+					class="w-full min-h-[400px] bg-white rounded-lg p-6 mt-8 shadow-lg flex flex-col gap-4">
+					<h2 class="font-bold text-lg text-202020">اطلاعات سوال</h2>
+
+					<%- include('../../partials/toast') %>
+
+					<!-- متن سوال -->
+					<div class="w-full flex flex-col gap-3 mt-3">
+						<label for="text" class="text-404040 text-sm">متن سوال</label>
+						<input
+							class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+							type="text"
+							name="text"
+							id="text"
+							required
+							placeholder="متن سوال" />
+					</div>
+
+					<!-- نوع سوال -->
+					<div class="w-full flex flex-col gap-3">
+						<label for="type" class="text-404040 text-sm">نوع سوال</label>
+						<select
+							class="choices w-full border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none"
+							id="type"
+							name="type"
+							required>
+							<option value="numeric">عددی</option>
+						</select>
+					</div>
+
+					<!-- انتخاب چک‌لیست -->
+					<div class="w-full flex flex-col gap-3 mt-3">
+						<label for="checklists" class="text-404040 text-sm">چک لیست</label>
+						<select
+							id="checklists"
+							name="checklist"
+							class="choices w-full border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none">
+							<% if (checklists && checklists.length) { %> <%
+							checklists.forEach(checklist => { %>
+							<option value="<%= checklist._id %>">
+								<%= checklist.name %>
+							</option>
+							<% }) %> <% } %>
+						</select>
+					</div>
+
+					<!-- دکمه‌های ارسال -->
+					<div
+						class="w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-2 mt-6">
+						<button
+							type="submit"
+							class="w-full sm:w-1/2 h-12 px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							ذخیره سوال
+						</button>
+						<a
+							href="/questions"
+							type="button"
+							class="w-full sm:w-1/2 h-12 px-6 bg-disabledButton text-606060 flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							لغو فرایند
+						</a>
+					</div>
+				</form>
+			</main>
+		</div>
+
+		<script>
+			// استفاده از Choices.js برای select باکس‌ها
+			document.addEventListener('DOMContentLoaded', function () {
+				// برای انتخاب نوع سوال
+				new Choices('#type', {
+					removeItemButton: true,
+					searchPlaceholderValue: 'جستجو...',
+				});
+
+				// برای انتخاب چک‌لیست‌ها
+				new Choices('#checklists', {
+					removeItemButton: true,
+					searchPlaceholderValue: 'جستجو...',
+				});
+			});
+		</script>
+	</body>
+</html>

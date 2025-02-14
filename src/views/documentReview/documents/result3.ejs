@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include("../../partials/head") %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl"><%= title %></h2>
+					<a
+						href="/document-reviews/documents"
+						class="h-10 px-4 lg:h-12 lg:px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+						<i class="ri-arrow-left-line"></i>
+						<span class="hidden sm:inline">بازگشت به لیست مستندات</span>
+					</a>
+				</header>
+
+				<%- include('../../partials/toast') %>
+
+				<!-- نمایش اطلاعات داکیومنت -->
+				<div class="mt-6">
+					<div class="bg-white p-4 rounded-lg shadow-lg">
+						<h3 class="text-xl font-bold mb-4">اطلاعات مستند</h3>
+						<table class="w-full border-collapse border border-CBCBCB text-sm lg:text-base">
+							<tbody>
+								<tr>
+									<td class="border border-CBCBCB p-2 font-bold">دسته‌بندی</td>
+									<td class="border border-CBCBCB p-2"><%= document.category.name %></td>
+								</tr>
+								<tr>
+									<td class="border border-CBCBCB p-2 font-bold">نام</td>
+									<td class="border border-CBCBCB p-2"><%= document.name %></td>
+								</tr>
+								<tr>
+									<td class="border border-CBCBCB p-2 font-bold">تاریخ ایجاد</td>
+									<td class="border border-CBCBCB p-2"><%= document.createdAt.toLocaleDateString('fa-IR') %></td>
+								</tr>
+								<tr>
+									<td class="border border-CBCBCB p-2 font-bold">تاریخ به‌روزرسانی</td>
+									<td class="border border-CBCBCB p-2"><%= document.updatedAt.toLocaleDateString('fa-IR') %></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<!-- نمایش نتایج تجزیه و تحلیل -->
+				<di class="mt-6">
+					<% if (document.analysisResult3 && Array.isArray(document.analysisResult3)) { %>
+						<div class="bg-white p-4 rounded-lg shadow-lg">
+							<h3 class="text-xl font-bold mb-4">نتایج تجزیه و تحلیل 3</h3>
+							<table class="w-full border-collapse border border-CBCBCB text-sm lg:text-base">
+								<thead class="bg-gray-200">
+									<tr>
+										<th class="border border-CBCBCB p-2">شاخص</th>
+										<th class="border border-CBCBCB p-2">خلاصه</th>
+										<th class="border border-CBCBCB p-2">نتیجه‌گیری</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% document.analysisResult3.forEach(item => { %>
+										<tr>
+											<td class="border border-CBCBCB p-2"><%= item[0] %></td> <!-- سیاست -->
+											<td class="border border-CBCBCB p-2"><%= item[1] %></td> <!-- توضیحات -->
+											<td class="border border-CBCBCB p-2"><%= item[2] %></td> <!-- نتیجه‌گیری -->
+										</tr>
+									<% }); %>
+								</tbody>
+															
+							</table>
+						</div>
+					<% } else { %>
+						<p>هیچ داده‌ای برای نمایش یافت نشد.</p>
+					<% } %>
+					
+					
+				</div>
+			</main>
+		</div>
+	</body>
+</html>

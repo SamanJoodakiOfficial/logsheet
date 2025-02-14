@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <%- include("../partials/head") %>
+
+  <body class="bg-primaryBackground">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+      <!-- Sidebar -->
+      <%- include('../partials/sidebar') %>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-4 lg:p-6">
+        <header class="w-full flex items-center justify-between flex-wrap gap-2">
+          <h2 class="font-bold text-202020 text-lg lg:text-xl">
+            ویرایش سازمان
+          </h2>
+        </header>
+
+        <form
+          action="/orgs/<%= org._id %>/edit"
+          method="POST"
+          class="w-full min-h-[400px] bg-white rounded-lg p-4 mt-8 shadow-lg flex flex-col gap-3"
+        >
+          <h2 class="font-bold text-lg text-202020">اطلاعات سازمان</h2>
+
+          <%- include('../partials/toast') %>
+
+          <!-- نام سازمان -->
+          <div class="w-full flex flex-col gap-1 mt-3">
+            <label for="name" class="text-404040 text-xs">نام سازمان</label>
+            <input
+              class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+              type="text"
+              name="name"
+              id="name"
+              value="<%= org.name %>"
+              required
+              placeholder="نام سازمان"
+            />
+          </div>
+
+          <!-- توضیحات -->
+          <div class="w-full flex flex-col gap-1">
+            <label for="description" class="text-404040 text-xs">توضیحات</label>
+            <textarea
+              class="w-full min-h-24 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+              name="description"
+              id="description"
+              placeholder="توضیحات"
+            ><%= org.description %></textarea>
+          </div>
+
+          <!-- کد اقتصادی -->
+          <div class="w-full flex flex-col gap-1">
+            <label for="economicCode" class="text-404040 text-xs">کد اقتصادی</label>
+            <input
+              class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+              type="text"
+              name="economicCode"
+              id="economicCode"
+              value="<%= org.economicCode %>"
+              placeholder="کد اقتصادی"
+            />
+          </div>
+
+          <!-- آدرس -->
+          <div class="w-full flex flex-col gap-1">
+            <label for="address" class="text-404040 text-xs">آدرس</label>
+            <textarea
+              class="w-full min-h-24 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+              name="address"
+              id="address"
+              placeholder="آدرس"
+            ><%= org.address %></textarea>
+          </div>
+
+          <!-- تلفن -->
+          <div class="w-full flex flex-col gap-1">
+            <label for="telephone" class="text-404040 text-xs">تلفن</label>
+            <input
+              class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+              type="tel"
+              name="telephone"
+              id="telephone"
+              value="<%= org.telephone %>"
+              placeholder="تلفن"
+            />
+          </div>
+
+          <!-- نوع سازمان -->
+          <div class="w-full flex flex-col gap-1">
+            <label for="type" class="text-404040 text-xs">نوع سازمان</label>
+            <select
+              id="type"
+              name="type"
+              class="choices-multiple w-full border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none"
+            >
+			<option value="private" <%= org.type && org.type.includes('private') ? 'selected' : '' %>>خصوصی</option>
+			<option value="public" <%= org.type && org.type.includes('public') ? 'selected' : '' %>>عمومی</option>
+			<option value="government" <%= org.type && org.type.includes('government') ? 'selected' : '' %>>دولتی</option>
+						</select>
+          </div>
+
+          <!-- ماژول‌ها -->
+          <div class="w-full flex flex-col gap-1">
+            <label for="modules" class="text-404040 text-xs">ماژول‌ها</label>
+            <select
+              id="modules"
+              name="modules[]"
+              class="choices-multiple w-full border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none"
+              multiple
+            >
+              <% if (modules && modules.length > 0) { %>
+                <% modules.forEach((module) => { %>
+                  <option value="<%= module.id %>"
+                    <%= org.modules.includes(module.id.toString()) ? 'selected' : '' %>>
+                    <%= module.name %>
+                  </option>
+                <% }) %>
+              <% } %>
+            </select>
+          </div>
+
+          <!-- دکمه‌های ارسال -->
+          <div class="w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-2 mt-6">
+            <button
+              type="submit"
+              class="w-full sm:w-1/2 h-12 px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200"
+            >
+              ذخیره تغییرات
+            </button>
+            <a
+              href="/orgs"
+              type="button"
+              class="w-full sm:w-1/2 h-12 px-6 bg-disabledButton text-606060 flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200"
+            >
+              لغو فرایند
+            </a>
+          </div>
+        </form>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const typeSelect = document.getElementById("type");
+        const modulesSelect = document.getElementById("modules");
+
+        new Choices(typeSelect, {
+          removeItemButton: true,
+          searchPlaceholderValue: "جستجو...",
+        });
+
+        new Choices(modulesSelect, {
+          removeItemButton: true,
+          searchPlaceholderValue: "جستجو...",
+        });
+      });
+    </script>
+  </body>
+</html>

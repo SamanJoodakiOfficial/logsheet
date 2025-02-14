@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include("../partials/head") %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header
+					class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">
+						ایجاد نقش جدید
+					</h2>
+				</header>
+
+				<form
+					action="/roles/<%= role._id %>/edit"
+					method="post"
+					class="w-full min-h-[400px] bg-white rounded-lg p-4 mt-8 shadow-lg flex flex-col gap-3">
+					<h2 class="font-bold text-lg text-202020">اطلاعات نقش</h2>
+
+					<%- include('../partials/toast') %>
+
+					<div class="w-full flex flex-col gap-1 mt-3">
+						<label for="name" class="text-404040 text-xs">نام</label>
+						<input
+							class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+							type="text"
+							name="name"
+							id="name"
+							required
+							value="<%= role.name || 'داده‌ای یافت نشد' %>"
+							placeholder="نام نقش" />
+					</div>
+
+					<div class="w-full flex flex-col gap-1">
+						<label for="description" class="text-404040 text-xs">توضیحات</label>
+						<textarea
+							class="w-full min-h-24 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+							name="description"
+							id="description"
+							placeholder="توضیحات نقش">
+<%= role.description || 'داده‌ای یافت نشد' %></textarea
+						>
+					</div>
+
+					<h3 class="font-bold text-lg text-202020 mt-4">مجوزها</h3>
+					<div id="permissions-container">
+						<% if (role.permissions && role.permissions.length > 0) { %>
+							<% role.permissions.forEach((permission, index) => { %>
+								<div class="permission-item">
+									<label for="module" class="text-404040 text-xs">پودمان:</label>
+									<select
+										name="permissions[<%= index %>][module]"
+										class="module-select w-full sm:w-auto border rounded-lg border-CBCBCB text-606060 bg-white focus:ring-2 focus:ring-primary outline-none"
+										required>
+										<option value="" disabled>انتخاب پودمان</option>
+										<% modules.forEach((module) => { %>
+											<option value="<%= module._id %>" <%= module._id === permission.module ? 'selected' : '' %>><%= module.name %></option>
+										<% }); %>
+									</select>
+					
+									<label class="mt-2">دسترسی:</label>
+									<div class="flex gap-2">
+										<label>
+											<input
+												type="checkbox"
+												name="permissions[<%= index %>][access][read]"
+												value="true"
+												<%= permission.access.read ? 'checked' : '' %> />
+											خواندن
+										</label>
+										<label>
+											<input
+												type="checkbox"
+												name="permissions[<%= index %>][access][write]"
+												value="true"
+												<%= permission.access.write ? 'checked' : '' %> />
+											نوشتن
+										</label>
+										<label>
+											<input
+												type="checkbox"
+												name="permissions[<%= index %>][access][update]"
+												value="true"
+												<%= permission.access.update ? 'checked' : '' %> />
+											ویرایش
+										</label>
+										<label>
+											<input
+												type="checkbox"
+												name="permissions[<%= index %>][access][delete]"
+												value="true"
+												<%= permission.access.delete ? 'checked' : '' %> />
+											حذف
+										</label>
+										<label>
+											<input
+												type="checkbox"
+												name="permissions[<%= index %>][access][admin]"
+												value="true"
+												<%= permission.access.admin ? 'checked' : '' %> />
+											ادمین
+										</label>
+									</div>
+									<button
+										type="button"
+										class="remove-permission mt-2 text-red-500"
+										onclick="removePermission(this)">
+										حذف مجوز
+									</button>
+								</div>
+							<% }); %>
+						<% } else { %>
+							<!-- مجوز پیش‌فرض در صورت نبود هیچ مجوزی -->
+							<div class="permission-item">
+								<label for="module" class="text-404040 text-xs">پودمان:</label>
+								<select
+									name="permissions[0][module]"
+									class="module-select w-full sm:w-auto border rounded-lg border-CBCBCB text-606060 bg-white focus:ring-2 focus:ring-primary outline-none"
+									required>
+									<option value="" disabled selected>انتخاب پودمان</option>
+									<% modules.forEach((module) => { %>
+										<option value="<%= module._id %>"><%= module.name %></option>
+									<% }); %>
+								</select>
+					
+								<label class="mt-2">دسترسی:</label>
+								<div class="flex gap-2">
+									<label>
+										<input type="checkbox" name="permissions[0][access][read]" value="true" />
+										خواندن
+									</label>
+									<label>
+										<input type="checkbox" name="permissions[0][access][write]" value="true" />
+										نوشتن
+									</label>
+									<label>
+										<input type="checkbox" name="permissions[0][access][update]" value="true" />
+										ویرایش
+									</label>
+									<label>
+										<input type="checkbox" name="permissions[0][access][delete]" value="true" />
+										حذف
+									</label>
+									<label>
+										<input type="checkbox" name="permissions[0][access][admin]" value="true" />
+										ادمین
+									</label>
+								</div>
+								<button
+									type="button"
+									class="remove-permission mt-2 text-red-500"
+									onclick="removePermission(this)">
+									حذف مجوز
+								</button>
+							</div>
+						<% } %>
+					</div>
+					
+
+					<button
+						type="button"
+						onclick="addPermission()"
+						class="w-full sm:w-auto h-12 px-6 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200 mt-4">
+						افزودن مجوز
+					</button>
+
+					<div
+						class="w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-2 mt-6">
+						<button
+							type="submit"
+							class="w-full sm:w-1/2 h-12 px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							ایجاد نقش
+						</button>
+						<a
+							href="/roles"
+							type="button"
+							class="w-full sm:w-1/2 h-12 px-6 bg-disabledButton text-606060 flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							لغو فرایند
+						</a>
+					</div>
+				</form>
+			</main>
+		</div>
+
+		<script>
+			let permissionIndex = 1;
+
+			function addPermission() {
+				const container = document.getElementById('permissions-container');
+				const newPermission = document.createElement('div');
+				newPermission.className = 'permission-item';
+				newPermission.innerHTML = `
+          <label for="module" class="text-404040 text-xs">پودمان:</label>
+          <select name="permissions[${permissionIndex}][module]" class="module-select w-full sm:w-auto border rounded-lg border-CBCBCB text-606060 bg-white focus:ring-2 focus:ring-primary outline-none" required>
+            <option value="" disabled selected>انتخاب پودمان</option>
+            <% modules.forEach((module) => { %>
+              <option value="<%= module._id %>"><%= module.name %></option>
+            <% }); %>
+          </select>
+
+          <label class="mt-2">دسترسی:</label>
+          <div class="flex gap-2">
+            <label>
+              <input type="checkbox" name="permissions[${permissionIndex}][access][read]" value="true" />
+              خواندن
+            </label>
+            <label>
+              <input type="checkbox" name="permissions[${permissionIndex}][access][write]" value="true" />
+              نوشتن
+            </label>
+            <label>
+              <input type="checkbox" name="permissions[${permissionIndex}][access][update]" value="true" />
+              ویرایش
+            </label>
+            <label>
+              <input type="checkbox" name="permissions[${permissionIndex}][access][delete]" value="true" />
+              حذف
+            </label>
+            <label>
+              <input type="checkbox" name="permissions[${permissionIndex}][access][admin]" value="true" />
+              ادمین
+            </label>
+          </div>
+          <button type="button" class="remove-permission mt-2 text-red-500" onclick="removePermission(this)">حذف مجوز</button>
+        `;
+				container.appendChild(newPermission);
+				permissionIndex++;
+				updateModuleOptions();
+			}
+
+			function removePermission(button) {
+				const container = document.getElementById('permissions-container');
+				if (container.children.length > 1) {
+					button.closest('.permission-item').remove();
+					updateModuleOptions();
+				} else {
+					alert('حداقل یک مجوز باید تعریف شود.');
+				}
+			}
+
+			function updateModuleOptions() {
+				const selectedModules = Array.from(
+					document.querySelectorAll('.module-select')
+				)
+					.map((select) => select.value)
+					.filter((value) => value);
+
+				document.querySelectorAll('.module-select').forEach((select) => {
+					const currentValue = select.value;
+					Array.from(select.options).forEach((option) => {
+						option.style.display =
+							selectedModules.includes(option.value) &&
+							option.value !== currentValue
+								? 'none'
+								: 'block';
+					});
+				});
+			}
+
+			document.addEventListener('change', (event) => {
+				if (event.target.classList.contains('module-select')) {
+					updateModuleOptions();
+				}
+			});
+		</script>
+	</body>
+</html>

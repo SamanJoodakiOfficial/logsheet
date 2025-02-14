@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include('../../partials/head') %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">
+						چک‌لیست‌های دوره: <%= course.name %>
+					</h2>
+				</header>
+
+				<%- include('../../partials/toast') %>
+
+				<div class="mt-8">
+					<% if (accessibleChecklists && accessibleChecklists.length > 0) { %>
+						<table class="w-full border-collapse border border-CBCBCB text-sm lg:text-base">
+							<thead class="bg-gray-200">
+								<tr>
+									<th class="border border-CBCBCB p-2">نام چک‌لیست</th>
+									<th class="border border-CBCBCB p-2">توضیحات</th>
+									<th class="border border-CBCBCB p-2">سوالات</th>
+								</tr>
+							</thead>
+							<tbody>
+								<% accessibleChecklists.forEach((checklist, index) => { %>
+									<tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-100' %> text-center">
+										<td class="border border-CBCBCB p-2 font-bold"><%= checklist.name %></td>
+										<td class="border border-CBCBCB p-2"><%= checklist.description %></td>
+										<td class="border border-CBCBCB p-2">
+											<% if (checklist.questions && checklist.questions.length > 0) { %>
+												<table class="w-full border-collapse border text-xs lg:text-sm">
+													<thead class="bg-gray-100">
+														<tr>
+															<th class="border border-CBCBCB p-2">سوال</th>
+															<th class="border border-CBCBCB p-2">نوع</th>
+															<th class="border border-CBCBCB p-2">پاسخ</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% checklist.questions.forEach((question) => { %>
+															<tr>
+																<td class="border border-CBCBCB p-2"><%= question.text %></td>
+																<td class="border border-CBCBCB p-2"><%= question.type %></td>
+																<td class="border border-CBCBCB p-2">
+																	<form action="/audit-courses/<%= course._id %>/checklists/<%= checklist._id %>/questions/<%= question._id %>/answer" method="get">
+																		<button type="submit" class="h-8 px-3 bg-primary text-white rounded-lg shadow hover:shadow-md transition-all duration-200">
+																			پاسخ دادن
+																		</button>
+																	</form>
+																</td>
+															</tr>
+														<% }); %>
+													</tbody>
+												</table>
+											<% } else { %>
+												<p>سوالی برای این چک‌لیست موجود نیست.</p>
+											<% } %>
+										</td>
+									</tr>
+								<% }); %>
+							</tbody>
+						</table>
+					<% } else { %>
+						<p class="text-center">هیچ چک‌لیستی برای این دوره وجود ندارد.</p>
+					<% } %>
+				</div>
+			</main>
+		</div>
+	</body>
+</html>

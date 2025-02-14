@@ -1,0 +1,41 @@
+{
+	"name": "nodejs-grc",
+	"version": "1.0.0",
+	"description": "\"# nodejs-grc\"",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node ./src/index.js",
+		"dev": "nodemon ./src/index.js",
+		"tailwind": "npx tailwindcss -i ./src/public/css/input.css -o ./src/public/css/output.css --watch"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/SamanJoodakiOfficial/nodejs-grc.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/SamanJoodakiOfficial/nodejs-grc/issues"
+	},
+	"homepage": "https://github.com/SamanJoodakiOfficial/nodejs-grc#readme",
+	"devDependencies": {
+		"nodemon": "^3.1.9",
+		"tailwindcss": "^3.4.17"
+	},
+	"dependencies": {
+		"bcrypt": "^5.1.1",
+		"body-parser": "^1.20.3",
+		"connect-flash": "^0.1.1",
+		"connect-mongo": "^5.1.0",
+		"dotenv": "^16.4.7",
+		"ejs": "^3.1.10",
+		"express": "^4.21.2",
+		"express-session": "^1.18.1",
+		"express-validator": "^7.2.1",
+		"i18n": "^0.15.1",
+		"mongoose": "^8.9.5",
+		"multer": "^1.4.5-lts.1",
+		"openai": "^4.83.0"
+	}
+}

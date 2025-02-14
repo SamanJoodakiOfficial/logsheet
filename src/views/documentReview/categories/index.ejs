@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include("../../partials/head") %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header
+					class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">
+						لیست دسته‌بندی‌ها
+					</h2>
+					<a
+						href="/document-reviews/categories/new"
+						class="h-10 px-4 lg:h-12 lg:px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+						<i class="ri-add-line"></i>
+						<span class="hidden sm:inline">ساخت دسته‌بندی جدید</span>
+					</a>
+				</header>
+
+				<%- include('../../partials/toast') %>
+
+				<div class="overflow-x-auto mt-8">
+					<% if (categories && categories.length > 0) { %>
+					<table
+						class="w-full border-collapse border border-CBCBCB text-sm lg:text-base">
+						<thead class="bg-gray-200">
+							<tr>
+								<th class="border border-CBCBCB p-2">نام</th>
+								<th class="border border-CBCBCB p-2">توضیحات</th>
+								<td class="border border-CBCBCB p-2">مدیریت شاخص‌ها</td>
+								<th class="border border-CBCBCB p-2">ویرایش</th>
+								<th class="border border-CBCBCB p-2">حذف</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% categories.forEach((category, index) => { %>
+							<tr
+								class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-100' %> text-center">
+								<td class="border border-CBCBCB p-2"><%= category.name %></td>
+								<td class="border border-CBCBCB p-2">
+									<%= category.description || '-' %>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<a
+									href="/document-reviews/categories/<%= category._id %>/indicators"
+									> شاخص‌ها
+								</a>
+								</td>
+								
+								<td class="border border-CBCBCB p-2">
+									<a
+										href="/document-reviews/categories/<%= category._id %>/edit"
+										class="text-blue-600 hover:underline">
+										<i class="ri-edit-line"></i>
+									</a>
+								</td>
+								<td class="border border-CBCBCB p-2">
+									<a
+										href="/document-reviews/categories/<%= category._id %>/delete"
+										class="text-red-600 hover:underline delete-btn"
+										data-id="<%= category._id %>">
+										<i class="ri-delete-bin-6-line"></i>
+									</a>
+								</td>
+							</tr>
+							<% }) %>
+						</tbody>
+					</table>
+					<% } else { %>
+					<div
+						class="w-full mt-6 bg-white rounded-lg shadow-lg p-4 text-center text-gray-500">
+						هیچ دسته‌بندیی یافت نشد.
+					</div>
+					<% } %>
+				</div>
+			</main>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const deleteButtons = document.querySelectorAll('.delete-btn');
+				deleteButtons.forEach((button) => {
+					button.addEventListener('click', (e) => {
+						e.preventDefault();
+						const confirmation = confirm(
+							'آیا مطمئن هستید که می‌خواهید این دسته‌بندی را حذف کنید؟'
+						);
+						if (confirmation) {
+							window.location.href = button.getAttribute('href');
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+</html>

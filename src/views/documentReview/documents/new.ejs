@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include("../../partials/head") %>
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<%- include('../../partials/sidebar') %>
+			<main class="flex-1 p-4 lg:p-6">
+				<header class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">
+						ایجاد سند جدید
+					</h2>
+				</header>
+				<form action="/document-reviews/documents/new" method="POST"
+					class="w-full min-h-[400px] bg-white rounded-lg p-4 mt-8 shadow-lg flex flex-col gap-3">
+					<%- include('../../partials/toast') %>
+
+					<div class="w-full flex flex-col gap-1">
+						<label for="category" class="text-404040 text-xs">دسته‌بندی</label>
+						<select name="category" id="category"
+							class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4">
+							<% categories.forEach(category => { %>
+							<option value="<%= category._id %>"><%= category.name %></option>
+							<% }) %>
+						</select>
+					</div>
+
+					<div class="w-full flex flex-col gap-1">
+						<label for="name" class="text-404040 text-xs">نام سند</label>
+						<input type="text" name="name" id="name" required placeholder="نام سند"
+							class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4" />
+					</div>
+
+					<div class="w-full flex flex-col gap-1">
+						<label for="fileId" class="text-404040 text-xs">شناسه فایل</label>
+						<input type="text" name="fileId" id="fileId" placeholder="شناسه فایل"
+							class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4" />
+					</div>
+
+					<!-- اضافه کردن سه تکست آریا برای تجزیه و تحلیل -->
+					<div class="w-full flex flex-col gap-1">
+						<label for="analysisResult1" class="text-404040 text-xs">نتیجه تجزیه و تحلیل اول</label>
+						<textarea name="analysisResult1" id="analysisResult1" placeholder="نتیجه تجزیه و تحلیل اول"
+							class="w-full min-h-24 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"></textarea>
+					</div>
+
+					<div class="w-full flex flex-col gap-1">
+						<label for="analysisResult2" class="text-404040 text-xs">نتیجه تجزیه و تحلیل دوم</label>
+						<textarea name="analysisResult2" id="analysisResult2" placeholder="نتیجه تجزیه و تحلیل دوم"
+							class="w-full min-h-24 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"></textarea>
+					</div>
+
+					<div class="w-full flex flex-col gap-1">
+						<label for="analysisResult3" class="text-404040 text-xs">نتیجه تجزیه و تحلیل سوم</label>
+						<textarea name="analysisResult3" id="analysisResult3" placeholder="نتیجه تجزیه و تحلیل سوم"
+							class="w-full min-h-24 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"></textarea>
+					</div>
+
+					<div class="w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-2 mt-6">
+						<button type="submit"
+							class="w-full sm:w-1/2 h-12 px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
+							ایجاد سند
+						</button>
+						<a href="/document-reviews/documents"
+							class="w-full sm:w-1/2 h-12 px-6 bg-disabledButton text-606060 flex items-center justify-center font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
+							لغو</a>
+					</div>
+				</form>
+			</main>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+		<script>
+			const categorySelect = document.getElementById('category');
+			const choices = new Choices(categorySelect, { searchEnabled: true });
+		</script>
+	</body>
+</html>

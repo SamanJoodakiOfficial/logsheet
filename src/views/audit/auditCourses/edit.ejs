@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+	<%- include("../../partials/head") %>
+
+	<body class="bg-primaryBackground">
+		<div class="flex flex-col lg:flex-row min-h-screen">
+			<!-- Sidebar -->
+			<%- include('../../partials/sidebar') %>
+
+			<!-- Main Content -->
+			<main class="flex-1 p-4 lg:p-6">
+				<header
+					class="w-full flex items-center justify-between flex-wrap gap-2">
+					<h2 class="font-bold text-202020 text-lg lg:text-xl">
+						ویرایش دوره لاگ شیت
+					</h2>
+				</header>
+
+				<form
+					action="/audit-courses/<%= auditCourse._id %>/edit"
+					method="POST"
+					class="w-full min-h-[400px] bg-white rounded-lg p-6 mt-8 shadow-lg flex flex-col gap-4">
+					<h2 class="font-bold text-lg text-202020">اطلاعات دوره لاگ شیت</h2>
+
+					<%- include('../../partials/toast') %>
+
+					<!-- نام دوره -->
+					<div class="w-full flex flex-col gap-3 mt-3">
+						<label for="name" class="text-404040 text-sm">نام دوره:</label>
+						<input
+							class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+							type="text"
+							name="name"
+							id="name"
+							value="<%= auditCourse.name %>"
+							required
+							placeholder="نام دوره" />
+					</div>
+
+					<!-- توضیحات -->
+					<div class="w-full flex flex-col gap-3">
+						<label for="description" class="text-404040 text-sm">توضیحات:</label>
+						<textarea
+							class="w-full h-24 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+							name="description"
+							id="description"
+							placeholder="توضیحات"><%= auditCourse.description %></textarea>
+					</div>
+
+					<!-- تاریخ شروع -->
+					<div class="w-full flex flex-col gap-3">
+						<label for="startDate" class="text-404040 text-sm">تاریخ شروع:</label>
+						<input
+							class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+							type="date"
+							name="startDate"
+							id="startDate"
+							value="<%= auditCourse.startDate.toISOString().split('T')[0] %>"
+							required />
+					</div>
+
+					<!-- تاریخ پایان -->
+					<div class="w-full flex flex-col gap-3">
+						<label for="endDate" class="text-404040 text-sm">تاریخ پایان:</label>
+						<input
+							class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+							type="date"
+							name="endDate"
+							id="endDate"
+							value="<%= auditCourse.endDate.toISOString().split('T')[0] %>"
+							required />
+					</div>
+
+					<!-- زمان‌های ثبت‌شده -->
+<div id="log-times-container" class="w-full flex flex-col gap-4">
+	<% auditCourse.logTimes.forEach((logTime, index) => { 
+        // تبدیل تاریخ به فرمت "HH:mm"
+        const time = new Date(logTime).toISOString().substring(11, 16);
+    %>
+		<div class="log-time-item flex flex-col gap-3">
+			<label class="text-404040 text-sm">زمان:</label>
+			<input
+				type="time"
+				name="logTimes[]"
+				class="log-time-input w-full h-12 border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none p-4"
+				value="<%= time %>"
+				required />
+			<button
+				type="button"
+				class="text-white bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 remove-log-time">
+				حذف
+			</button>
+		</div>
+	<% }) %>
+</div>
+
+<!-- دکمه افزودن زمان جدید -->
+<button
+	type="button"
+	id="add-log-time"
+	class="text-white bg-primary w-full mt-4 px-4 py-2 rounded-lg hover:bg-primaryDark">
+	اضافه کردن زمان
+</button>
+
+
+					<!-- دسترسی‌ها -->
+					<div id="access-container" class="w-full flex flex-col gap-4">
+						<% auditCourse.access.forEach((accessItem, index) => { %>
+							<div class="access-item flex flex-col gap-3">
+								<label class="text-404040 text-sm">کاربر:</label>
+								<select
+									name="access[<%= index %>][user]"
+									class="user-select w-full h-12 border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none"
+									required>
+									<option value="" disabled>انتخاب کنید</option>
+									<% users.forEach(user => { %>
+										<option value="<%= user._id %>" <%= user._id == accessItem.user._id ? 'selected' : '' %> >
+											<%= user.email %>
+										</option>
+									<% }) %>
+								</select>
+
+								<label class="text-404040 text-sm">چک‌لیست‌ها:</label>
+								<select
+  name="access[<%= index %>][checklists][]"
+  multiple
+  class="checklist-select w-full h-12 border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none"
+  required>
+  <% checklists.forEach(checklist => { %>
+    <option value="<%= checklist._id %>" <%= accessItem.checklists.some(chk => chk._id == checklist._id) ? 'selected' : '' %> >
+      <%= checklist.name %>
+    </option>
+  <% }) %>
+</select>
+
+
+								<button
+									type="button"
+									class="text-white bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 remove-access">
+									حذف
+								</button>
+							</div>
+						<% }) %>
+					</div>
+
+					<button
+						type="button"
+						id="add-access"
+						class="text-white bg-primary w-full mt-4 px-4 py-2 rounded-lg hover:bg-primaryDark">
+						اضافه کردن دسترسی
+					</button>
+
+					<!-- دکمه‌های ارسال -->
+					<div
+						class="w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-2 mt-6">
+						<button
+							type="submit"
+							class="w-full sm:w-1/2 h-12 px-6 bg-primary text-white flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							ذخیره دوره لاگ شیت
+						</button>
+						<a
+							href="/audit-courses"
+							type="button"
+							class="w-full sm:w-1/2 h-12 px-6 bg-disabledButton text-606060 flex items-center justify-center font-bold rounded-lg shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200">
+							لغو فرایند
+						</a>
+					</div>
+				</form>
+			</main>
+		</div>
+
+		<script>
+			// کدهای افزودن و حذف زمان‌ها و دسترسی‌ها مشابه صفحه ایجاد دوره لاگ شیت خواهد بود
+		</script>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const logTimesContainer = document.getElementById(
+			'log-times-container'
+		);
+		const addLogTimeBtn = document.getElementById('add-log-time');
+
+		const updateLogTimesOptions = () => {
+			const logTimeInputs = Array.from(
+				document.querySelectorAll('.log-time-input')
+			);
+			// بررسی برای فعال یا غیرفعال کردن دکمه افزودن زمان
+			addLogTimeBtn.disabled = logTimeInputs.length >= 10; // برای محدود کردن به 10 زمان (در صورت نیاز)
+		};
+
+		addLogTimeBtn.addEventListener('click', () => {
+			const index = logTimesContainer.children.length;
+
+			const newLogTimeItem = document.createElement('div');
+			newLogTimeItem.classList.add(
+				'log-time-item',
+				'flex',
+				'flex-col',
+				'gap-3'
+			);
+			newLogTimeItem.innerHTML = `
+	<label class="text-404040 text-sm">زمان:</label>
+	<input 
+		type="time" 
+		name="logTimes[]" 
+		class="log-time-input w-full h-12 border rounded-lg text-606060 bg-white focus:ring-2 focus:ring-primary outline-none p-4" 
+		required
+	/>
+	<button 
+		type="button" 
+		class="text-white bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 remove-log-time">
+		حذف
+	</button>
+`;
+
+			logTimesContainer.appendChild(newLogTimeItem);
+			updateLogTimesOptions(); // بروزرسانی وضعیت دکمه افزودن زمان
+		});
+
+		logTimesContainer.addEventListener('click', (event) => {
+			if (event.target.classList.contains('remove-log-time')) {
+				event.target.parentElement.remove();
+				updateLogTimesOptions(); // بروزرسانی وضعیت دکمه افزودن زمان
+			}
+		});
+
+		updateLogTimesOptions(); // تنظیم اولیه وضعیت دکمه افزودن زمان
+	});
+</script>
+
+<script>
+			document.addEventListener('DOMContentLoaded', () => {
+	const accessContainer = document.getElementById('access-container');
+	const addAccessBtn = document.getElementById('add-access');
+	const userSelectClass = 'user-select';
+
+	const initialUsers = <%- JSON.stringify(users) %>;
+	const initialChecklists = <%- JSON.stringify(checklists) %>;
+
+	const getAllUserSelects = () => Array.from(document.querySelectorAll(`.${userSelectClass}`));
+
+	const initializeChoices = () => {
+		// Initialize Choices.js for all select elements
+		document.querySelectorAll(`.${userSelectClass}, select[multiple]`).forEach(select => {
+			new Choices(select, {
+				removeItemButton: true,
+				searchEnabled: true,
+				placeholder: true,
+				noResultsText: 'هیچ نتیجه‌ای یافت نشد',
+				noChoicesText: 'هیچ گزینه‌ای در دسترس نیست',
+			});
+		});
+	};
+
+	const updateUserOptions = () => {
+		const selectedUsers = new Set(
+			getAllUserSelects().map(select => select.value).filter(value => value)
+		);
+
+		getAllUserSelects().forEach(select => {
+			const prevValue = select.value;
+
+			select.innerHTML = `
+				<option value="" selected disabled>انتخاب کنید</option>
+				${initialUsers
+					.map(user => `
+						<option value="${user._id}" ${selectedUsers.has(user._id) && user._id !== prevValue ? 'disabled' : ''} ${user._id === prevValue ? 'selected' : ''}>
+							${user.email}
+						</option>
+					`)
+					.join('')}
+			`;
+
+			select.dataset.prevValue = prevValue;
+		});
+
+		if (getAllUserSelects().length >= initialUsers.length) {
+			addAccessBtn.disabled = true;
+		} else {
+			addAccessBtn.disabled = false;
+		}
+	};
+
+	addAccessBtn.addEventListener('click', () => {
+		const index = accessContainer.children.length;
+
+		const newAccessItem = document.createElement('div');
+		newAccessItem.classList.add('access-item', 'flex', 'flex-col', 'gap-3');
+		newAccessItem.innerHTML = `
+			<label class="text-404040 text-sm">کاربر:</label>
+			<select name="access[${index}][user]" class="user-select w-full h-12 border rounded-lg text-606060 bg-white outline-none" data-prev-value="" required>
+				<option value="" selected disabled>انتخاب کنید</option>
+				${initialUsers.map(user => `<option value="${user._id}">${user.email}</option>`).join('')}
+			</select>
+
+			<label class="text-404040 text-sm">چک‌لیست‌ها:</label>
+			<select name="access[${index}][checklists][]" multiple required class="w-full h-12 border rounded-lg text-606060 bg-white outline-none">
+				${initialChecklists.map(checklist => `<option value="${checklist._id}">${checklist.name}</option>`).join('')}
+			</select>
+
+			<button type="button" class="text-white bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 remove-access">حذف</button>
+		`;
+
+		accessContainer.appendChild(newAccessItem);
+		updateUserOptions();
+		initializeChoices(); // Reinitialize Choices.js for the new select
+	});
+
+	accessContainer.addEventListener('click', (event) => {
+		if (event.target.classList.contains('remove-access')) {
+			event.target.parentElement.remove();
+			updateUserOptions();
+		}
+	});
+
+	accessContainer.addEventListener('change', (event) => {
+		if (event.target.classList.contains(userSelectClass)) {
+			updateUserOptions();
+		}
+	});
+
+	updateUserOptions();
+	initializeChoices();
+	});
+</script>
+	</body>
+</html>
