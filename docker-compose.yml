@@ -1,0 +1,9 @@
+services:
+  db:
+    container_name: taaba_db
+    image: mongo:latest
+    volumes:
+      - db_storage:/var/lib/mongodb/data
+volumes:
+  db_storage:
+    name: db_storage
