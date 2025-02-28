@@ -28,6 +28,12 @@ const shiftSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    users: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

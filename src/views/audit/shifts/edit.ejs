@@ -68,6 +68,15 @@
             </select>
           </div>
 
+          <div>
+            <label for="users">انتخاب کاربران</label>
+            <select multiple name="users" id="users">
+              <% users.forEach(function(user) { %>
+                <option value="<%= user._id %>" <%= shift.users.includes(user._id) ? 'selected' : '' %>><%= user.email %></option>
+              <% }); %>
+            </select>
+          </div>
+
           <!-- دکمه‌های ارسال -->
           <div class="w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-2 mt-6">
             <button
