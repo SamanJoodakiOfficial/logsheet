@@ -4,6 +4,8 @@ services:
     image: mongo:latest
     volumes:
       - db_storage:/var/lib/mongodb/data
+    ports:
+      - '27017:27017'
 volumes:
   db_storage:
     name: db_storage
