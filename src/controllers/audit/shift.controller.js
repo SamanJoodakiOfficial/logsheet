@@ -28,7 +28,7 @@ const newShift = async (req, res) => {
   try {
     const shift = new Shift({ name, startTime, endTime, daysOfWeek });
     await shift.save();
-    flashAndRedirect(req, res, "شیفت جدید با موفقیت اضافه شد!", "/shifts");
+    flashAndRedirect(req, res, 'success', "شیفت جدید با موفقیت اضافه شد!", "/shifts");
   } catch (error) {
     handleError(error, req, res, "/shifts/new");
   }
@@ -55,7 +55,7 @@ const editShift = async (req, res) => {
       { new: true }
     );
     if (!shift) return res.redirect("/shifts");
-    flashAndRedirect(req, res, "شیفت با موفقیت ویرایش شد!", "/shifts");
+    flashAndRedirect(req, res, 'success', "شیفت با موفقیت ویرایش شد!", "/shifts");
   } catch (error) {
     handleError(error, req, res, `/shifts/${req.params.id}/edit`);
   }
@@ -65,7 +65,7 @@ const editShift = async (req, res) => {
 const deleteShift = async (req, res) => {
   try {
     await Shift.findByIdAndDelete(req.params.id);
-    flashAndRedirect(req, res, "شیفت با موفقیت حذف شد!", "/shifts");
+    flashAndRedirect(req, res, 'success', "شیفت با موفقیت حذف شد!", "/shifts");
   } catch (error) {
     handleError(error, req, res, "/shifts");
   }

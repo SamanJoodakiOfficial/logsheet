@@ -60,7 +60,7 @@
           <!-- روزهای هفته -->
           <div class="w-full flex flex-col gap-1 mt-3">
             <label for="daysOfWeek" class="text-404040 text-xs">روزهای هفته</label>
-            <select name="daysOfWeek" id="daysOfWeek" class="w-full h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4" multiple>
+            <select name="daysOfWeek" id="daysOfWeek" class="w-full h-full border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4" multiple>
               <% const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
               <% daysOfWeek.forEach(day => { %>
                 <option value="<%= day %>" <%= shift.daysOfWeek.includes(day) ? "selected" : "" %>><%= day %></option>

@@ -1,5 +1,4 @@
 const Group = require('../models/group.model');
-const Org = require('../models/org.model');
 const Module = require('../models/module.model');
 
 const logger = require('../controllers/log.controller');
