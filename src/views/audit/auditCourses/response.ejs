@@ -63,21 +63,8 @@
 									min="0"
 									max="100"
 									class="w-full sm:w-auto p-4 border rounded-lg bg-primaryBackground"
-									value="<%= existingResponse && Array.isArray(existingResponse.answers) && existingResponse.answers[index] && existingResponse.answers[index].answer !== undefined ? existingResponse.answers[index].answer : '0' %>"
-									required />
-
-								<!-- Delay Time input with decimal support -->
-								<label for="delayTime_<%= index %>" class="mr-2"
-									>زمان تأخیر:</label
-								>
-								<input
-									type="number"
-									name="delayTimes[<%= index %>]"
-									id="delayTime_<%= index %>"
-									class="w-full sm:w-auto p-4 border rounded-lg bg-primaryBackground"
-									value="<%= existingResponse && Array.isArray(existingResponse.answers) && existingResponse.answers[index] && existingResponse.answers[index].delayTime !== undefined ? existingResponse.answers[index].delayTime : '0' %>"
-									step="0.1"
-									min="0"
+									<% if(existingResponse && Array.isArray(existingResponse.answers) && existingResponse.answers[index] && existingResponse.answers[index].answer !== undefined){ %>readonly<% } %>
+									<% if(existingResponse && Array.isArray(existingResponse.answers) && existingResponse.answers[index] && existingResponse.answers[index].answer !== undefined) { %> value="<%= existingResponse.answers[index].answer %>" <% } %>
 									required />
 							</div>
 							<% }); %>

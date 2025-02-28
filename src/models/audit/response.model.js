@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const answerSchema = new mongoose.Schema({
     answer: { type: Number, required: true },
-    delayTime: { type: Number, required: true }
+    delayTime: { type: Number, required: false, default: 0 },
 }, { timestamps: true });
 
 const schema = mongoose.Schema({

@@ -142,20 +142,19 @@ const newResponse = async (req, res) => {
     try {
         const {courseId, checklistId, questionId} = req.params;
         const userId = req.session.userId;
-        let {hours, delayTimes} = req.body;
+        let {hours} = req.body;
 
-        // Ensure 'hours' and 'delayTimes' are arrays and are valid
-        if (!Array.isArray(hours) || !Array.isArray(delayTimes) || hours.length !== delayTimes.length) {
+        if (!Array.isArray(hours)) {
             return flashAndRedirect(req, res, 'error', 'تعداد ساعات و زمان تأخیر باید برابر باشند.', `/audit-courses/${courseId}/checklists/${checklistId}/questions/${questionId}/answer`);
         }
 
         // Convert hours to numbers
-        let answers = hours.map((hour, index) => ({
-            answer: Number(hour), delayTime: Number(delayTimes[index]) // Ensure delayTime is valid
+        let answers = hours.map((hour, _) => ({
+            answer: Number(hour)
         }));
 
         // Validate answers
-        if (answers.some(a => isNaN(a.answer) || a.answer < 0 || a.answer > 100 || isNaN(a.delayTime))) {
+        if (answers.some(a => isNaN(a.answer) || a.answer < 0 || a.answer > 100)) {
             return flashAndRedirect(req, res, 'error', 'پاسخ یا زمان تأخیر معتبر نیست.', `/audit-courses/${courseId}/checklists/${checklistId}/questions/${questionId}/answer`);
         }
 
