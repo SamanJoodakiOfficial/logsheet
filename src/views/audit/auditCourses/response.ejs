@@ -17,11 +17,11 @@
 				<div class="mt-8">
 					<%- include('../../partials/toast') %>
 
-					<h2 class="font-bold text-lg text-202020">دوره: <%= courseName %></h2>
+					<h2 class="font-bold text-lg text-202020">دوره: <%= course.name %></h2>
 					<h3 class="font-semibold text-md text-202020">
-						چک‌لیست: <%= checklistName %>
+						چک‌لیست: <%= checklist.name %>
 					</h3>
-					<h4 class="text-md text-202020">سوال: <%= questionText %></h4>
+					<h4 class="text-md text-202020">سوال: <%= question.text %></h4>
 
 					<!-- نمایش پاسخ‌های ثبت‌شده در صورت وجود -->
 					<% if (existingResponse) { %>

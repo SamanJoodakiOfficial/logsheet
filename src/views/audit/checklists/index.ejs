@@ -28,6 +28,7 @@
 							<tr>
 								<th class="border border-CBCBCB p-2">نام</th>
 								<th class="border border-CBCBCB p-2">توضیحات</th>
+								<th class="border border-CBCBCB p-2">پاسخ ها</th>
 								<th class="border border-CBCBCB p-2">ویرایش</th>
 								<th class="border border-CBCBCB p-2">حذف</th>
 							</tr>
@@ -41,6 +42,12 @@
 										</td>
 										<td class="border border-CBCBCB p-2">
 											<%= checklist.description || '-' %>
+										</td>
+										<td class="border border-CBCBCB p-2">
+											<a href="/checklists/<%= checklist._id %>/responses"
+												class="cursor-pointer text-lg text-blue-600 hover:underline">
+												نمایش
+											</a>
 										</td>
 										<td class="border border-CBCBCB p-2">
 											<a href="/checklists/<%= checklist._id %>/edit"

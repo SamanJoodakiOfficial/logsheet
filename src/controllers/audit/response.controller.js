@@ -1,8 +1,5 @@
-const mongoose = require('mongoose');
-
 const Response = require('../../models/audit/response.model');
 const Question = require('../../models/audit/question.model');
-const Checklist = require('../../models/audit/checklist.model');
 const AuditCourse = require('../../models/audit/auditCourse.model');
 
 const flashAndRedirect = require('../../utils/flashAndRedirect');
@@ -14,12 +11,30 @@ const renderResponses = async (req, res) => {
         const responses = await Response.find()
             .populate('user audit checklist question')
             .populate('question.options')
-            .sort({ createdAt: -1 });
+            .sort({createdAt: -1});
 
-        res.render('audit/responses/index', { title: 'لیست تمامی پاسخ ها', responses });
+        res.render('audit/responses/index', {title: 'لیست تمامی پاسخ ها', responses});
 
     } catch (error) {
         handleError(error, req, res, '/responses');
+    }
+}
+
+const renderResponsesByChecklist = async (req, res) => {
+    const {id} = req.params;
+
+    try {
+        const responses = await Response.find({
+            checklist: id
+        })
+            .populate('user audit checklist question')
+            .populate('question.options')
+            .sort({createdAt: -1});
+        const checklist = responses.length > 0 ? responses[0].checklist : null;
+        if (!checklist) handleError('error chert', req, res, '/checklists');
+        res.render('audit/checklists/responses', {title: `لیست پاسخ های چک لیست ${id}`, responses, checklist})
+    } catch (error) {
+        handleError(error, req, res, '/checklists');
     }
 }
 
@@ -30,20 +45,17 @@ const renderReport = async (req, res) => {
             .populate('audit', 'name')
             .populate('checklist', 'name')
             .populate({
-                path: 'question',
-                select: 'text type options',
+                path: 'question', select: 'text type options',
             })
             .lean();
 
         const groupedData = {};
         responses.forEach((response) => {
-            const { audit, checklist, question, user, answer } = response;
+            const {audit, checklist, question, user, answer} = response;
 
             let formattedAnswer = answer;
             if (question.type === 'multiple-choice' && Array.isArray(question.options)) {
-                const selectedOption = question.options.find(
-                    (option) => option._id.toString() === answer.toString()
-                );
+                const selectedOption = question.options.find((option) => option._id.toString() === answer.toString());
                 formattedAnswer = selectedOption ? selectedOption.text : 'نامشخص';
             }
 
@@ -58,14 +70,12 @@ const renderReport = async (req, res) => {
             }
 
             groupedData[audit.name][checklist.name][question.text].push({
-                user: user.email,
-                answer: formattedAnswer,
+                user: user.email, answer: formattedAnswer,
             });
         });
 
         res.render('audit/auditCourses/report', {
-            title: 'گزارش دوره‌ها',
-            groupedData,
+            title: 'گزارش دوره‌ها', groupedData,
         });
     } catch (error) {
         handleError(error, req, res, '/responses');
@@ -88,13 +98,12 @@ const deleteResponse = async (req, res) => {
 
 const renderNewResponse = async (req, res) => {
     try {
-        const { courseId, checklistId, questionId } = req.params;
+        const {courseId, checklistId, questionId} = req.params;
         const userId = req.session.userId;
 
         const question = await Question.findById(questionId)
             .populate({
-                path: 'checklist',
-                match: { _id: checklistId },
+                path: 'checklist', match: {_id: checklistId},
             });
 
         if (!question || !question.checklist) {
@@ -102,7 +111,7 @@ const renderNewResponse = async (req, res) => {
         }
 
         const course = await AuditCourse.findById(courseId)
-            .populate('access', null, { user: userId });
+            .populate('access', null, {user: userId});
 
         if (!course || !course.access.length) {
             return flashAndRedirect(req, res, 'error', 'دوره یافت نشد یا دسترسی ندارید.', '/audit-courses');
@@ -111,10 +120,7 @@ const renderNewResponse = async (req, res) => {
         const checklist = question.checklist;
 
         const existingResponse = await Response.findOne({
-            user: userId,
-            audit: courseId,
-            checklist: checklistId,
-            question: questionId
+            user: userId, audit: courseId, checklist: checklistId, question: questionId
         });
 
         // Extract hours from logTimes (assuming you want just the hour part)
@@ -124,15 +130,7 @@ const renderNewResponse = async (req, res) => {
         });
 
         res.render('audit/auditCourses/response', {
-            title: 'پاسخ به سوال',
-            course,
-            checklist,
-            question,
-            courseName: course.name,
-            checklistName: checklist.name,
-            questionText: question.text,
-            existingResponse,
-            hoursArray // Pass the hoursArray to the EJS template
+            title: 'پاسخ به سوال', course, checklist, question, existingResponse, hoursArray // Pass the hoursArray to the EJS template
         });
 
     } catch (error) {
@@ -142,9 +140,9 @@ const renderNewResponse = async (req, res) => {
 
 const newResponse = async (req, res) => {
     try {
-        const { courseId, checklistId, questionId } = req.params;
+        const {courseId, checklistId, questionId} = req.params;
         const userId = req.session.userId;
-        let { hours, delayTimes } = req.body;
+        let {hours, delayTimes} = req.body;
 
         // Ensure 'hours' and 'delayTimes' are arrays and are valid
         if (!Array.isArray(hours) || !Array.isArray(delayTimes) || hours.length !== delayTimes.length) {
@@ -153,8 +151,7 @@ const newResponse = async (req, res) => {
 
         // Convert hours to numbers
         let answers = hours.map((hour, index) => ({
-            answer: Number(hour),
-            delayTime: Number(delayTimes[index]) // Ensure delayTime is valid
+            answer: Number(hour), delayTime: Number(delayTimes[index]) // Ensure delayTime is valid
         }));
 
         // Validate answers
@@ -173,10 +170,7 @@ const newResponse = async (req, res) => {
         }
 
         let existingResponse = await Response.findOne({
-            user: userId,
-            audit: courseId,
-            checklist: checklistId,
-            question: questionId
+            user: userId, audit: courseId, checklist: checklistId, question: questionId
         });
 
         if (existingResponse) {
@@ -188,11 +182,7 @@ const newResponse = async (req, res) => {
         } else {
             // Create new response
             const newResponse = new Response({
-                user: userId,
-                audit: courseId,
-                checklist: checklistId,
-                question: questionId,
-                answers: answers,
+                user: userId, audit: courseId, checklist: checklistId, question: questionId, answers: answers,
             });
 
             await newResponse.save();
@@ -205,11 +195,6 @@ const newResponse = async (req, res) => {
 };
 
 
-
 module.exports = {
-    renderResponses,
-    deleteResponse,
-    renderNewResponse,
-    newResponse,
-    renderReport
+    renderResponses, deleteResponse, renderNewResponse, newResponse, renderReport, renderResponsesByChecklist
 }
