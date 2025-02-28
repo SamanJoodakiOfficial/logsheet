@@ -15,9 +15,6 @@ const shiftSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    repetitive: {
-      type: Boolean,
-    },
     daysOfWeek: {
       type: [String],
       enum: [
