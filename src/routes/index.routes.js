@@ -36,11 +36,6 @@ router.use('/audit-courses', isAuthenticated, require('./audit/auditCourse.route
 // Response Router
 router.use('/responses', isAuthenticated, require('./audit/response.routes'));
 
-/**
- * Document review routes
- */
-router.use('/document-reviews', isAuthenticated, require('./documentReview/documentReview.routes'));
-
 // Logout Route
 router.get('/logout', isAuthenticated, logout);
 

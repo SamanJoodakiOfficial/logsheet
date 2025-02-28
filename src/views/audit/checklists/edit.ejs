@@ -35,6 +35,25 @@
 							name="description" id="description" placeholder="توضیحات"><%= checklist.description %></textarea>
 					</div>
 
+					<!-- ساعت‌ها -->
+					<div class="w-full flex flex-col gap-1 mt-3" id="timesContainer">
+						<label for="times" class="text-404040 text-xs">ساعت‌ها (فرمت: HH:mm)</label>
+						<% checklist.times.forEach(function(time) { %>
+							<div class="flex gap-2">
+								<input class="w-1/2 h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+									type="text" name="times[]" value="<%= time %>" placeholder="مثال: 14:30" />
+								<button type="button" class="deleteTimeButton bg-red-500 text-white px-3 py-1 rounded-lg">حذف</button>
+							</div>
+						<% }); %>
+					</div>
+
+					<!-- دکمه افزودن ساعت -->
+					<div class="w-full flex justify-start mt-3">
+						<button type="button" id="addTimeButton" class="bg-primary text-white px-6 py-2 rounded-lg shadow-lg">
+							افزودن ساعت
+						</button>
+					</div>
+
 					<!-- دکمه‌های ارسال -->
 					<div class="w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-2 mt-6">
 						<button type="submit"
@@ -49,5 +68,30 @@
 				</form>
 			</main>
 		</div>
+
+		<script>
+			// افزودن فیلد ساعت جدید
+			document.getElementById('addTimeButton').addEventListener('click', function() {
+				const timesContainer = document.getElementById('timesContainer');
+				const newInput = document.createElement('div');
+				newInput.classList.add('flex', 'gap-2');
+				newInput.innerHTML = `
+					<input class="w-1/2 h-12 border rounded-lg text-606060 bg-primaryBackground focus:ring-2 focus:ring-primary text-right outline-none p-4"
+						type="text" name="times[]" placeholder="مثال: 14:30" />
+					<button type="button" class="deleteTimeButton bg-red-500 text-white px-3 py-1 rounded-lg">حذف</button>
+				`;
+				timesContainer.appendChild(newInput);
+			});
+
+			// حذف فیلد ساعت
+			document.addEventListener('click', function(event) {
+				if (event.target && event.target.classList.contains('deleteTimeButton')) {
+					const timeInputDiv = event.target.closest('.flex');
+					if (confirm("آیا مطمئن هستید که می‌خواهید این ساعت را حذف کنید؟")) {
+						timeInputDiv.remove();
+					}
+				}
+			});
+		</script>
 	</body>
 </html>
