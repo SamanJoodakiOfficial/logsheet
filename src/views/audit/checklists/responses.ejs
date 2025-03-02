@@ -54,6 +54,8 @@
 															<%= selectedOption ? selectedOption.text : 'هیچ گزینه‌ای انتخاب نشده' %>
 														<% } else { %>
 															<%= response.answers[index]?.answer || '-' %>
+															<br>
+															<%= responses.answers[index]?.createdAt || '-' %>
 														<% } %>
 													<% } else { %>
 														-
