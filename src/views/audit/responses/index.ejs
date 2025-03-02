@@ -15,8 +15,8 @@
           <h2 class="font-bold text-202020 text-lg lg:text-xl">لیست پاسخ‌ها</h2>
 
           <% const todayFilter = typeof today !== 'undefined'; const filterUrl =
-          todayFilter ? `/checklists/${checklist._id}/responses` :
-          `/checklists/${checklist._id}/responses?today=true`; %>
+          todayFilter ? `/responses` :
+          `/responses?today=true`; %>
           <a
             href="<%= filterUrl %>"
             class="h-10 px-4 bg-blue-500 text-white font-bold rounded-lg flex items-center justify-center shadow-md hover:bg-blue-600 transition-all duration-200"
