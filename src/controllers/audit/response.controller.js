@@ -21,22 +21,36 @@ const renderResponses = async (req, res) => {
 }
 
 const renderResponsesByChecklist = async (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
+    
+    // گرفتن تاریخ امروز بدون زمان
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
 
     try {
         const responses = await Response.find({
-            checklist: id
+            checklist: id,
+            createdAt: { $gte: startOfDay, $lte: endOfDay } // فیلتر بر اساس تاریخ امروز
         })
             .populate('user audit checklist question')
             .populate('question.options')
-            .sort({createdAt: -1});
+            .sort({ createdAt: -1 });
+
         const checklist = responses.length > 0 ? responses[0].checklist : null;
-        if (!checklist) handleError('error chert', req, res, '/checklists');
-        res.render('audit/checklists/responses', {title: `لیست پاسخ های چک لیست ${id}`, responses, checklist})
+        if (!checklist) handleError('چک لیست مورد نظر یافت نشد', req, res, '/checklists');
+
+        res.render('audit/checklists/responses', {
+            title: `لیست پاسخ‌های چک لیست ${id}`,
+            responses,
+            checklist
+        });
     } catch (error) {
         handleError(error, req, res, '/checklists');
     }
-}
+};
 
 const renderReport = async (req, res) => {
     try {
