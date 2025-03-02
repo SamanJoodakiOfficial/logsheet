@@ -1,103 +1,130 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-	<%- include('../../partials/head') %>
+  <%- include('../../partials/head') %>
 
-	<body class="bg-primaryBackground">
-		<div class="flex flex-col lg:flex-row min-h-screen">
-			<!-- Sidebar -->
-			<%- include('../../partials/sidebar') %>
+  <body class="bg-primaryBackground">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+      <!-- Sidebar -->
+      <%- include('../../partials/sidebar') %>
 
-			<!-- Main Content -->
-			<main class="flex-1 p-4 lg:p-6">
-				<header class="w-full flex items-center justify-between flex-wrap gap-2">
-					<h2 class="font-bold text-202020 text-lg lg:text-xl">لیست پاسخ‌ها</h2>
-				</header>
+      <!-- Main Content -->
+      <main class="flex-1 p-4 lg:p-6">
+        <header
+          class="w-full flex items-center justify-between flex-wrap gap-2"
+        >
+          <h2 class="font-bold text-202020 text-lg lg:text-xl">لیست پاسخ‌ها</h2>
 
-				<%- include('../../partials/toast') %>
+          <% const todayFilter = typeof today !== 'undefined'; // بررسی وجود
+          پارامتر today const filterUrl = todayFilter ? `/checklists/<%=
+          checklist._id %>/responses` : `/checklists/<%= checklist._id
+          %>/responses?today=true`; %>
 
-				<div class="overflow-x-auto mt-8">
-					<table class="w-full border-collapse border border-CBCBCB text-sm lg:text-base">
-						<thead class="bg-gray-200">
-							<tr>
-								<th class="border border-CBCBCB p-2">کاربر</th>
-								<th class="border border-CBCBCB p-2">سوال</th>
-								<% checklist.times.forEach(time => {%>
-									<th class="border border-CBCBCB p-2"><%= time %></th>
-								<% }) %>
-								<th class="border border-CBCBCB p-2">تاریخ ثبت</th>
-								<th class="border border-CBCBCB p-2">تاخیر</th>
-								<th class="border border-CBCBCB p-2">حذف</th>
-							</tr>
-						</thead>
-						<tbody>
-							<% if (responses && responses.length > 0) { %>
-								<% responses.forEach((response) => { %>
-									<tr class="<%= response._id % 2 === 0 ? 'bg-white' : 'bg-gray-100' %> text-center">
-										<td class="border border-CBCBCB p-2"><%= response.user.email || '-' %></td>
-										<td class="border border-CBCBCB p-2"><%= response.question ? response.question.text : '-' %></td>
-										<%
-											let diffInMinutes;
-										%>
-											<% checklist.times.forEach((time, index) => { %>
-												<%
-													const createdAtDate = new Date(response.createdAt);
-													const [hours, minutes] = time.split(':').map(Number);
-													const timeDate = new Date(createdAtDate);
-													timeDate.setHours(hours, minutes, 0, 0);
+          <a
+            href="<%= filterUrl %>"
+            class="h-10 px-4 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition-all duration-200"
+          >
+            فیلتر امروز
+          </a>
+        </header>
 
-													diffInMinutes = Math.abs((timeDate - createdAtDate) / (1000 * 60));
-												%>
-												<td class="border border-CBCBCB p-2">
-													<% if (diffInMinutes <= 120 || diffInMinutes >= 120) { %>
-														<% if (response.question && response.question.type === 'multiple-choice') { %>
-															<% const selectedOption = response.question.options.find(option => option._id.toString() === response.answer.toString()); %>
-															<%= selectedOption ? selectedOption.text : 'هیچ گزینه‌ای انتخاب نشده' %>
-														<% } else { %>
-															<%= response.answers[index]?.answer || '-' %>
-															<br>
-															<%= response.answers[index]?.createdAt.toLocaleString('fa-IR') || '-' %>
-														<% } %>
-													<% } else { %>
-														-
-													<% } %>
-												</td>
-											<% }) %>
-										<td class="border border-CBCBCB p-2"><%= response.createdAt.toLocaleString() || '-' %></td>
-										<td class="border border-CBCBCB p-2">0</td>
-										<td class="border border-CBCBCB p-2">
-										  <form action="/responses/<%= response._id %>/delete" method="get" style="display: inline">
-											<button type="submit" class="cursor-pointer text-lg text-red-600 hover:underline">
-											  <i class="ri-delete-bin-7-line"></i>
-											</button>
-										  </form>
-										</td>
-									  </tr>
-								<% }) %>
-							<% } else { %>
-								<tr>
-									<td colspan="9" class="border border-CBCBCB p-2 text-center">هیچ پاسخی یافت نشد.</td>
-								</tr>
-							<% } %>
-						</tbody>
-					</table>
-				</div>
-			</main>
-		</div>
+        <%- include('../../partials/toast') %>
 
-		<script>
-			document.addEventListener('DOMContentLoaded', () => {
-				const deleteForms = document.querySelectorAll('form');
-				deleteForms.forEach((form) => {
-					const deleteButton = form.querySelector('button');
-					deleteButton.addEventListener('click', (e) => {
-						e.preventDefault(); // جلوگیری از ارسال فوری فرم
-						const confirmation = confirm('آیا مطمئن هستید که می‌خواهید این پاسخ را حذف کنید؟');
-						if (confirmation) {
-							form.submit(); // ارسال فرم در صورت تایید کاربر
-						}
-					});
-				});
-			});
-		</script>
-	</body>
+        <div class="overflow-x-auto mt-8">
+          <table
+            class="w-full border-collapse border border-CBCBCB text-sm lg:text-base"
+          >
+            <thead class="bg-gray-200">
+              <tr>
+                <th class="border border-CBCBCB p-2">کاربر</th>
+                <th class="border border-CBCBCB p-2">سوال</th>
+                <% checklist.times.forEach(time => {%>
+                <th class="border border-CBCBCB p-2"><%= time %></th>
+                <% }) %>
+                <th class="border border-CBCBCB p-2">تاریخ ثبت</th>
+                <th class="border border-CBCBCB p-2">تاخیر</th>
+                <th class="border border-CBCBCB p-2">حذف</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (responses && responses.length > 0) { %> <%
+              responses.forEach((response) => { %>
+              <tr
+                class="<%= response._id % 2 === 0 ? 'bg-white' : 'bg-gray-100' %> text-center"
+              >
+                <td class="border border-CBCBCB p-2">
+                  <%= response.user.email || '-' %>
+                </td>
+                <td class="border border-CBCBCB p-2">
+                  <%= response.question ? response.question.text : '-' %>
+                </td>
+                <% let diffInMinutes; %> <% checklist.times.forEach((time,
+                index) => { %> <% const createdAtDate = new
+                Date(response.createdAt); const [hours, minutes] =
+                time.split(':').map(Number); const timeDate = new
+                Date(createdAtDate); timeDate.setHours(hours, minutes, 0, 0);
+                diffInMinutes = Math.abs((timeDate - createdAtDate) / (1000 *
+                60)); %>
+                <td class="border border-CBCBCB p-2">
+                  <% if (diffInMinutes <= 120 || diffInMinutes >= 120) { %> <%
+                  if (response.question && response.question.type ===
+                  'multiple-choice') { %> <% const selectedOption =
+                  response.question.options.find(option => option._id.toString()
+                  === response.answer.toString()); %> <%= selectedOption ?
+                  selectedOption.text : 'هیچ گزینه‌ای انتخاب نشده' %> <% } else
+                  { %> <%= response.answers[index]?.answer || '-' %>
+                  <br />
+                  <%= response.answers[index]?.createdAt.toLocaleString('fa-IR')
+                  || '-' %> <% } %> <% } else { %> - <% } %>
+                </td>
+                <% }) %>
+                <td class="border border-CBCBCB p-2">
+                  <%= response.createdAt.toLocaleString() || '-' %>
+                </td>
+                <td class="border border-CBCBCB p-2">0</td>
+                <td class="border border-CBCBCB p-2">
+                  <form
+                    action="/responses/<%= response._id %>/delete"
+                    method="get"
+                    style="display: inline"
+                  >
+                    <button
+                      type="submit"
+                      class="cursor-pointer text-lg text-red-600 hover:underline"
+                    >
+                      <i class="ri-delete-bin-7-line"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              <% }) %> <% } else { %>
+              <tr>
+                <td colspan="9" class="border border-CBCBCB p-2 text-center">
+                  هیچ پاسخی یافت نشد.
+                </td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const deleteForms = document.querySelectorAll("form");
+        deleteForms.forEach((form) => {
+          const deleteButton = form.querySelector("button");
+          deleteButton.addEventListener("click", (e) => {
+            e.preventDefault(); // جلوگیری از ارسال فوری فرم
+            const confirmation = confirm(
+              "آیا مطمئن هستید که می‌خواهید این پاسخ را حذف کنید؟"
+            );
+            if (confirmation) {
+              form.submit(); // ارسال فرم در صورت تایید کاربر
+            }
+          });
+        });
+      });
+    </script>
+  </body>
 </html>
