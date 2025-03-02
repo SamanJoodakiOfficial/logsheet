@@ -7,8 +7,25 @@ const handleError = require("../../utils/handleError");
 const logger = require("../../controllers/log.controller");
 
 const renderResponses = async (req, res) => {
+  const { id } = req.params;
+  const { today } = req.query;
+  // گرفتن تاریخ امروز بدون زمان
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  let query = {};
+
+  if (today) {
+    query = {
+      ...query,
+      createdAt: { $gte: startOfDay, $lte: endOfDay }, // فیلتر بر اساس تاریخ امروز
+    };
+  }
   try {
-    const responses = await Response.find()
+    const responses = await Response.find(query)
       .populate("user audit checklist question")
       .populate("question.options")
       .sort({ createdAt: -1 });
@@ -23,8 +40,8 @@ const renderResponses = async (req, res) => {
 };
 
 const renderResponsesByChecklist = async (req, res) => {
-  const { id, today } = req.params;
-
+  const { id } = req.params;
+  const { today } = req.query;
   // گرفتن تاریخ امروز بدون زمان
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
