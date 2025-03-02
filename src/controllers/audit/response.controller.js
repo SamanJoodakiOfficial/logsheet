@@ -215,104 +215,110 @@ const renderNewResponse = async (req, res) => {
 };
 
 const newResponse = async (req, res) => {
-  try {
-    const { courseId, checklistId, questionId } = req.params;
-    const userId = req.session.userId;
-    let { hours } = req.body;
-
-    if (!Array.isArray(hours)) {
-      return flashAndRedirect(
-        req,
-        res,
-        "error",
-        "تعداد ساعات و زمان تأخیر باید برابر باشند.",
-        `/audit-courses/${courseId}/checklists/${checklistId}/questions/${questionId}/answer`
-      );
-    }
-
-    // Convert hours to numbers
-    let answers = hours.map((hour, _) => ({
-      answer: Number(hour),
-    }));
-
-    // Validate answers
-    if (
-      answers.some((a) => isNaN(a.answer) || a.answer < 0 || a.answer > 100)
-    ) {
-      return flashAndRedirect(
-        req,
-        res,
-        "error",
-        "پاسخ یا زمان تأخیر معتبر نیست.",
-        `/audit-courses/${courseId}/checklists/${checklistId}/questions/${questionId}/answer`
-      );
-    }
-
-    const question = await Question.findById(questionId);
-    if (!question) {
-      return flashAndRedirect(
-        req,
-        res,
-        "error",
-        "سوال یافت نشد.",
-        `/audit-courses/${courseId}/checklists/${checklistId}/questions/${questionId}/answer`
-      );
-    }
-
-    const course = await AuditCourse.findById(courseId);
-    if (!course) {
-      return flashAndRedirect(
-        req,
-        res,
-        "error",
-        "دوره یافت نشد.",
-        `/audit-courses`
-      );
-    }
-
-    let existingResponse = await Response.findOne({
-      user: userId,
-      audit: courseId,
-      checklist: checklistId,
-      question: questionId,
-    });
-
-    if (existingResponse) {
-      // Update existing response
-      existingResponse.answers = answers;
-      await existingResponse.save();
-      logger("UPDATE", "Response", req.session.userId, req.ip);
-      flashAndRedirect(
-        req,
-        res,
-        "success",
-        "پاسخ با موفقیت ویرایش شد.",
-        `/audit-courses/${courseId}/checklists`
-      );
-    } else {
-      // Create new response
-      const newResponse = new Response({
+    try {
+      const { courseId, checklistId, questionId } = req.params;
+      const userId = req.session.userId;
+      let { hours } = req.body;
+  
+      if (!Array.isArray(hours)) {
+        return flashAndRedirect(
+          req,
+          res,
+          "error",
+          "تعداد ساعات و زمان تأخیر باید برابر باشند.",
+          `/audit-courses/${courseId}/checklists/${checklistId}/questions/${questionId}/answer`
+        );
+      }
+  
+      // حذف مقادیر خالی (null, undefined, "")
+      hours = hours.filter((hour) => hour !== null && hour !== undefined && hour !== "");
+  
+      if (hours.length === 0) {
+        return flashAndRedirect(
+          req,
+          res,
+          "error",
+          "هیچ پاسخی وارد نشده است.",
+          `/audit-courses/${courseId}/checklists/${checklistId}/questions/${questionId}/answer`
+        );
+      }
+  
+      // تبدیل ساعت‌ها به عدد
+      let answers = hours.map((hour) => ({
+        answer: Number(hour),
+      }));
+  
+      // اعتبارسنجی پاسخ‌ها
+      if (answers.some((a) => isNaN(a.answer) || a.answer < 0 || a.answer > 100)) {
+        return flashAndRedirect(
+          req,
+          res,
+          "error",
+          "پاسخ یا زمان تأخیر معتبر نیست.",
+          `/audit-courses/${courseId}/checklists/${checklistId}/questions/${questionId}/answer`
+        );
+      }
+  
+      const question = await Question.findById(questionId);
+      if (!question) {
+        return flashAndRedirect(
+          req,
+          res,
+          "error",
+          "سوال یافت نشد.",
+          `/audit-courses/${courseId}/checklists/${checklistId}/questions/${questionId}/answer`
+        );
+      }
+  
+      const course = await AuditCourse.findById(courseId);
+      if (!course) {
+        return flashAndRedirect(req, res, "error", "دوره یافت نشد.", `/audit-courses`);
+      }
+  
+      let existingResponse = await Response.findOne({
         user: userId,
         audit: courseId,
         checklist: checklistId,
         question: questionId,
-        answers: answers,
       });
-
-      await newResponse.save();
-      logger("CREATE", "Response", req.session.userId, req.ip);
-      flashAndRedirect(
-        req,
-        res,
-        "success",
-        "پاسخ با موفقیت ثبت شد.",
-        `/audit-courses/${courseId}/checklists`
-      );
+  
+      if (existingResponse) {
+        // اگر مقدار جدیدی وجود دارد، بروزرسانی انجام شود
+        existingResponse.answers = answers;
+        await existingResponse.save();
+        logger("UPDATE", "Response", req.session.userId, req.ip);
+        flashAndRedirect(
+          req,
+          res,
+          "success",
+          "پاسخ با موفقیت ویرایش شد.",
+          `/audit-courses/${courseId}/checklists`
+        );
+      } else {
+        // ایجاد پاسخ جدید
+        const newResponse = new Response({
+          user: userId,
+          audit: courseId,
+          checklist: checklistId,
+          question: questionId,
+          answers: answers,
+        });
+  
+        await newResponse.save();
+        logger("CREATE", "Response", req.session.userId, req.ip);
+        flashAndRedirect(
+          req,
+          res,
+          "success",
+          "پاسخ با موفقیت ثبت شد.",
+          `/audit-courses/${courseId}/checklists`
+        );
+      }
+    } catch (error) {
+      handleError(error, req, res, "/audit-courses");
     }
-  } catch (error) {
-    handleError(error, req, res, "/audit-courses");
-  }
-};
+  };
+  
 
 module.exports = {
   renderResponses,
