@@ -55,7 +55,7 @@
 														<% } else { %>
 															<%= response.answers[index]?.answer || '-' %>
 															<br>
-															<%= response.answers[index]?.createdAt || '-' %>
+															<%= response.answers[index]?.createdAt.toLocaleString('fa-IR') || '-' %>
 														<% } %>
 													<% } else { %>
 														-
